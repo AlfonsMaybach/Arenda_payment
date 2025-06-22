@@ -16,25 +16,27 @@
         }
 
         <!-- === ФОН СТРАНИЦЫ === -->
-        body {
-            background: url('https://hdpic.club/uploads/posts/2022-01/1641061909_1-hdpic-club-p-mersedes-chernii-fon-1.jpg') no-repeat center center fixed;
-            background-size: cover;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #333;
-        }
+        <style>
+    /* ЗАМЕНИТЕ ВЕСЬ CSS НА ЭТОТ ВАРИАНТ */
+    body {
+        background: url('https://images.unsplash.com/photo-1494976388901-750835ad5e2a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+        background-size: cover;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
-        <!-- === ОКНО ОПЛАТЫ === -->
-        .payment-container {
-            background-color: rgba(255, 255, 255, 0.85); /* Белый с 15% прозрачности */
-            border-radius: 12px; /* Закругленные углы */
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); /* Тень */
-            width: 90%;
-            max-width: 450px; /* Максимальная ширина */
-            padding: 30px; /* Внутренние отступы */
-        }
+    .payment-container {
+        background-color: rgba(255, 255, 255, 0.9); /* Увеличил непрозрачность */
+        border: 1px solid #ddd; /* Добавил рамку */
+        border-radius: 12px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5); /* Усилил тень */
+        width: 90%;
+        max-width: 450px;
+        padding: 30px;
+    }
+</style>
 
         <!-- === ШАПКА ФОРМЫ === -->
         .payment-header {
