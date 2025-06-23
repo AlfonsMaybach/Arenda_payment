@@ -1,137 +1,57 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <!-- Настройки страницы -->
-    <meta charset="UTF-8"> <!-- Кодировка -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Адаптивность -->
-    <title>Оплата Аренды</title> <!-- Заголовок вкладки -->
-    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оплата Аренды</title>
     <style>
-        /* Сброс стандартных стилей */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Arial', sans-serif; /* Четкий стандартный шрифт */
         }
 
-        <!-- === ФОН СТРАНИЦЫ === -->
-        <style>
-    /* ЗАМЕНИТЕ ВЕСЬ CSS НА ЭТОТ ВАРИАНТ */
-    body {
-        background: url('https://images.unsplash.com/photo-1494976388901-750835ad5e2a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
-        background-size: cover;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .payment-container {
-        background-color: rgba(255, 255, 255, 0.9); /* Увеличил непрозрачность */
-        border: 1px solid #ddd; /* Добавил рамку */
-        border-radius: 12px;
-        box-shadow: 0 0 20px rgba(0,0,0,0.5); /* Усилил тень */
-        width: 90%;
-        max-width: 450px;
-        padding: 30px;
-    }
-</style>
-
-        <!-- === ШАПКА ФОРМЫ === -->
-        .payment-header {
-            text-align: center;
-            margin-bottom: 25px;
+        body {
+            background: url('https://images.unsplash.com/photo-1494976388901-750835ad5e2a') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
+
+        .payment-container {
+            background-color: rgba(255, 255, 255, 0.92); /* Слегка прозрачный белый */
+            border-radius: 12px;
+            border: 1px solid #e0e0e0; /* Тонкая серая рамка */
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 450px;
+            padding: 30px;
+        }
+
+        /* Остальные стили остаются КАК В ПРЕДЫДУЩЕМ РАБОЧЕМ ВАРИАНТЕ */
         .payment-header h1 {
-            color: #2c3e50; /* Темно-синий цвет */
+            color: #2c3e50;
             font-size: 24px;
             font-weight: 600;
             margin-bottom: 8px;
+            font-family: 'Arial', sans-serif; /* Фиксим шрифт */
         }
 
-        <!-- === ФОРМА ВВОДА === -->
-        .payment-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px; /* Расстояние между полями */
-        }
-
-        <!-- === ГРУППА ПОЛЕЙ (input + label) === -->
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .input-group label {
-            font-size: 14px;
-            color: #555; /* Серый цвет */
-            font-weight: 500;
-        }
         .input-group input {
-            padding: 12px 15px;
-            border: 1px solid #ddd; /* Серая рамка */
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease; /* Плавные анимации */
-        }
-        .input-group input:focus {
-            outline: none;
-            border-color: #3498db; /* Синяя рамка при фокусе */
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2); /* Свечение */
-        }
-
-        <!-- === СООБЩЕНИЕ ОБ ОШИБКЕ === -->
-        .error-message {
-            color: #e74c3c; /* Красный цвет */
-            font-size: 13px;
-            height: 16px;
-            margin-top: 4px;
-        }
-
-        <!-- === КНОПКА ОПЛАТЫ === -->
-        .submit-btn {
-            background-color: #2c3e50; /* Темно-синий */
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-        }
-        .submit-btn:hover {
-            background-color: #1a252f; /* Темнее при наведении */
-            transform: translateY(-2px); /* Эффект "поднятия" */
-        }
-        .submit-btn:active {
-            transform: translateY(0); /* Эффект нажатия */
-        }
-
-        <!-- === МЕЛКИЙ ТЕКСТ (под кнопкой) === -->
-        .info-text {
-            font-size: 12px;
-            color: #7f8c8d; /* Серый цвет */
-            text-align: center;
-            margin-top: 20px;
-            line-height: 1.4;
-        }
-
-        <!-- === АДАПТИВНОСТЬ ДЛЯ ТЕЛЕФОНОВ === -->
-        @media (max-width: 480px) {
-            .payment-container {
-                padding: 25px 20px;
-                width: 95%;
-            }
-            .payment-header h1 {
-                font-size: 20px;
-            }
+            border: 1px solid #ddd !important; /* Жестко задаем рамку */
         }
     </style>
 </head>
 <body>
+    <!-- ВЕСЬ HTML КОПИРУЕТСЯ БЕЗ ИЗМЕНЕНИЙ ИЗ ПРЕДЫДУЩЕГО РАБОЧЕГО ВАРИАНТА -->
+    <div class="payment-container">
+        <!-- ... ваш существующий HTML ... -->
+    </div>
+</body>
+</html>
     <!-- Основная разметка -->
     <div class="payment-container">
         <div class="payment-header">
