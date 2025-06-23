@@ -173,7 +173,16 @@
             <p class="info-text"></p>
         </form>
     </div>
+document.getElementById('authButton').addEventListener('click', function() {
+    const clientId = 'ВАШ_CLIENT_ID'; // Замените на реальный ID из ЛК Точки
+    const redirectUri = encodeURIComponent('https://вашсайт.ru/auth-callback.html');
+    window.location.href = `https://enter.tochka.com/uapi/oauth2/auth?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=payments`;
+});
 
+// Проверка токена при загрузке
+if (!localStorage.getItem('tochka_token')) {
+    console.log('Требуется авторизация');
+}
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
