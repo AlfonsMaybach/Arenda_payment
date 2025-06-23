@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Показываем все параметры URL
+            const params = new URLSearchParams(window.location.search);
+            let output = '<h2>Параметры URL:</h2><ul>';
+            
+            for (const [key, value] of params.entries()) {
+                output += `<li><strong>${key}:</strong> ${value}</li>`;
+            }
+            
+            output += '</ul>';
+            document.getElementById('output').innerHTML = output;
+        });
+    </script>
+</head>
+<body>
+    <div id="output"></div>
+    <p>Полный URL: <span id="fullUrl"></span></p>
+    <script>
+        document.getElementById('fullUrl').textContent = window.location.href;
+    </script>
+</body>
+</html>
