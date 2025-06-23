@@ -9,213 +9,60 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
         }
 
         body {
-            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
-                        url('https://hdpic.club/uploads/posts/2022-01/1641061909_1-hdpic-club-p-mersedes-chernii-fon-1.jpg') no-repeat center center fixed;
+            background: url('https://hdpic.club/uploads/posts/2022-01/1641061909_1-hdpic-club-p-mersedes-chernii-fon-1.jpg') no-repeat center center fixed;
             background-size: cover;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #333;
         }
 
-        .payment-container {
-            background-color: rgba(255, 255, 255, 0.55);
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-            width: 90%;
-            max-width: 450px;
-            padding: 30px;
-            backdrop-filter: blur(5px);
-        }
-
-        .payment-header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .payment-header h1 {
-            color: #2c3e50;
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .payment-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .input-group label {
-            font-size: 14px;
-            color: #555;
-            font-weight: 500;
-        }
-
-        .input-group input {
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-        }
-
-        .error-message {
-            color: #e74c3c;
-            font-size: 13px;
-            height: 16px;
-            margin-top: 4px;
-        }
-
-        .submit-btn {
+        .pay-button {
             background-color: #2c3e50;
             color: white;
             border: none;
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 16px;
+            padding: 20px 50px;
+            border-radius: 12px;
+            font-size: 22px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(3px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
-        .submit-btn:hover {
+        .pay-button:hover {
             background-color: #1a252f;
-            transform: translateY(-2px);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
         }
 
-        .submit-btn:active {
-            transform: translateY(0);
-        }
-
-        .auth-btn {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .auth-btn:hover {
-            background-color: #2980b9;
-        }
-
-        .info-text {
-            font-size: 12px;
-            color: #7f8c8d;
-            text-align: center;
-            margin-top: 20px;
-            line-height: 1.4;
-        }
-
-        @media (max-width: 480px) {
-            .payment-container {
-                padding: 25px 20px;
-                width: 95%;
-            }
-            
-            .payment-header h1 {
-                font-size: 20px;
-            }
+        .pay-button:active {
+            transform: translateY(0) scale(1);
         }
     </style>
 </head>
 <body>
-    <div class="payment-container">
-        <div class="payment-header">
-            <h1>Оплата Аренды</h1>
-        </div>
-        
-        <form class="payment-form" id="paymentForm">
-            <div class="input-group">
-                <label for="contact">Email или номер телефона</label>
-                <input type="text" id="contact" name="contact" placeholder="example@mail.ru или +79991234567">
-                <div class="error-message" id="errorMessage"></div>
-            </div>
-            
-            <button type="submit" class="submit-btn">Оплатить через Точку</button>
-            
-            <p class="info-text">Данные сохраняются в вашем браузере для быстрых оплат в будущем.</p>
-        </form>
-    </div>
+    <button class="pay-button" id="payButton">Оплатить</button>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const paymentForm = document.getElementById('paymentForm');
-            const contactInput = document.getElementById('contact');
-            const errorMessage = document.getElementById('errorMessage');
+            const payButton = document.getElementById('payButton');
             
-            // Загрузка сохраненных данных
-            const savedContact = localStorage.getItem('rentalPaymentContact');
-            if (savedContact) {
-                contactInput.value = savedContact;
-            }
-            
-            paymentForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const contactValue = contactInput.value.trim();
-                
-                // Валидация
-                if (!contactValue) {
-                    errorMessage.textContent = 'Пожалуйста, введите email или номер телефона';
-                    return;
-                }
-                
-                // Сохранение в LocalStorage
-                localStorage.setItem('rentalPaymentContact', contactValue);
-                
-                // Проверка, email это или телефон
-                const isEmail = contactValue.includes('@');
-                
+            payButton.addEventListener('click', function() {
                 // Платежная форма в песочнице
                 const baseUrl = 'https://oplata-sandbox.tochka.com/pay/sandbox_form';
                 const params = new URLSearchParams();
                 
-                // Обязательные параметры
+                // Параметры платежа
                 params.append('amount', 1000); // Сумма в копейках (1000 копеек = 10 рублей)
                 params.append('payment_purpose', 'Оплата аренды');
                 
-                // Дополнительные параметры
-                if (isEmail) {
-                    params.append('customer_email', contactValue);
-                } else {
-                    params.append('customer_phone', contactValue);
-                }
-                
                 window.location.href = `${baseUrl}?${params.toString()}`;
-            });
-            
-            // Сброс ошибки при вводе
-            contactInput.addEventListener('input', function() {
-                if (errorMessage.textContent) {
-                    errorMessage.textContent = '';
-                }
             });
         });
     </script>
