@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -120,6 +120,27 @@
         }
 
 
+        .auth-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            width: 100%;
+            text-align: center;
+        }
+
+
+        .auth-btn:hover {
+            background-color: #2980b9;
+        }
+
+
         .info-text {
             font-size: 12px;
             color: #7f8c8d;
@@ -146,21 +167,12 @@
         <div class="payment-header">
             <h1>Оплата Аренды</h1>
         </div>
-        <button id="authButton" style="
-        padding: 10px 15px;
-        background: #2c3e50;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 14px;
-        cursor: pointer;
-        margin-bottom: 20px;
-        display: block;
-        width: 100%;
-    ">
-        Авторизоваться через Точку
-    </button>
-    ">
+        
+        <!-- Кнопка авторизации -->
+        <button id="authButton" class="auth-btn">
+            Авторизоваться через Точку
+        </button>
+        
         <form class="payment-form" id="paymentForm">
             <div class="input-group">
                 <label for="contact">Email или номер телефона</label>
@@ -173,22 +185,31 @@
             <p class="info-text"></p>
         </form>
     </div>
-document.getElementById('authButton').addEventListener('click', function() {
-    const clientId = 'ВАШ_CLIENT_ID'; // Замените на реальный ID из ЛК Точки
-    const redirectUri = encodeURIComponent('https://вашсайт.ru/auth-callback.html');
-    window.location.href = `https://enter.tochka.com/uapi/oauth2/auth?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=payments`;
-});
 
-// Проверка токена при загрузке
-if (!localStorage.getItem('tochka_token')) {
-    console.log('Требуется авторизация');
-}
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const paymentForm = document.getElementById('paymentForm');
             const contactInput = document.getElementById('contact');
             const errorMessage = document.getElementById('errorMessage');
+            const authButton = document.getElementById('authButton');
+            
+            // Данные из Точки
+            const CLIENT_ID = 'dd54729143a249c887461d9df60f87d1';
+            const CLIENT_SECRET = '94171e50727d47008c22d0914d4d1a12';
+            const REDIRECT_URI = 'https://alfonsmaybach.github.io/Arenda_payment/auth-callback.html';
+            
+            // Проверка авторизации
+            if (localStorage.getItem('tochka_token')) {
+                authButton.textContent = 'Авторизован';
+                authButton.style.backgroundColor = '#27ae60';
+            }
+            
+            // Обработчик авторизации
+            authButton.addEventListener('click', function() {
+                const authUrl = `https://enter.tochka.com/uapi/oauth2/auth?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=payments`;
+                window.location.href = authUrl;
+            });
             
             // Загрузка сохраненных данных
             const savedContact = localStorage.getItem('rentalPaymentContact');
@@ -196,7 +217,8 @@ if (!localStorage.getItem('tochka_token')) {
                 contactInput.value = savedContact;
             }
             
-            paymentForm.addEventListener('submit', function(e) {
+            // Обработчик формы оплаты
+            paymentForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 const contactValue = contactInput.value.trim();
@@ -207,26 +229,45 @@ if (!localStorage.getItem('tochka_token')) {
                     return;
                 }
                 
-                // Сохранение в LocalStorage
-                localStorage.setItem('rentalPaymentContact', contactValue);
-                
-                // Проверка, email это или телефон
-                const isEmail = contactValue.includes('@');
-                
-                // Перенаправление на платежную форму Точки Банка
-                // ВАЖНО: Замените YOUR_FORM_ID на реальный ID формы
-                const baseUrl = 'https://oplata.tochka.com/pay/YOUR_FORM_ID';
-                const params = new URLSearchParams();
-                
-                if (isEmail) {
-                    params.append('email', contactValue);
-                    params.append('phone', contactValue); // Передаем email и в phone тоже
-                } else {
-                    params.append('phone', contactValue);
-                    params.append('email', contactValue); // Передаем телефон и в email тоже
+                // Проверка авторизации
+                const token = localStorage.getItem('tochka_token');
+                if (!token) {
+                    errorMessage.textContent = 'Сначала авторизуйтесь через Точку';
+                    return;
                 }
                 
-                window.location.href = `${baseUrl}?${params.toString()}`;
+                try {
+                    // Сохранение контакта
+                    localStorage.setItem('rentalPaymentContact', contactValue);
+                    
+                    // Создание платежа через API Точки
+                    const response = await fetch('https://api.tochka.com/payments', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            amount: 1000, // Сумма в рублях
+                            currency: "RUB",
+                            payment_purpose: "Оплата аренды",
+                            customer_email: contactValue.includes('@') ? contactValue : null,
+                            customer_phone: !contactValue.includes('@') ? contactValue : null,
+                            return_url: window.location.href
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.payment_url) {
+                        window.location.href = data.payment_url;
+                    } else {
+                        errorMessage.textContent = 'Ошибка при создании платежа';
+                    }
+                } catch (err) {
+                    errorMessage.textContent = 'Ошибка соединения';
+                    console.error(err);
+                }
             });
             
             // Сброс ошибки при вводе
