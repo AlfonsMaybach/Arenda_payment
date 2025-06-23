@@ -1,80 +1,144 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
-  <title>Обработка авторизации</title>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const authCode = urlParams.get('code');
-      
-      console.log('Auth callback received. Code:', authCode);
-      console.log('Full URL:', window.location.href);
-
-
-      if (authCode) {
-        // Данные для ПЕСОЧНИЦЫ Точки
-        const CLIENT_ID = 'sandbox_client';
-        const CLIENT_SECRET = 'sandbox_secret';
-        const REDIRECT_URI = 'https://alfonsmaybach.github.io/Arenda_payment/auth-callback.html';
-        
-        const tokenEndpoint = 'https://enter-sandbox.tochka.com/uapi/oauth2/token';
-        const requestBody = new URLSearchParams({
-          grant_type: 'authorization_code',
-          code: authCode,
-          client_id: CLIENT_ID,
-          client_secret: CLIENT_SECRET,
-          redirect_uri: REDIRECT_URI
-        });
-        
-        console.log('Request to token endpoint:', tokenEndpoint);
-        console.log('Request body:', requestBody.toString());
-
-
-        fetch(tokenEndpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: requestBody
-        })
-        .then(response => {
-          console.log('Token response status:', response.status);
-          
-          if (!response.ok) {
-            return response.text().then(text => {
-              throw new Error(`HTTP ${response.status}: ${text}`);
-            });
-          }
-          return response.json();
-        })
-        .then(data => {
-          console.log('Token response data:', data);
-          
-          if (data.access_token) {
-            localStorage.setItem('tochka_token', data.access_token);
-            window.location.href = 'index.html?auth=success';
-          } else {
-            throw new Error('Токен не получен в ответе');
-          }
-        })
-        .catch(error => {
-          console.error('Auth error:', error);
-          alert('Ошибка авторизации: ' + error.message);
-        });
-      } else {
-        console.error('Authorization code not found in URL');
-        alert('Код авторизации не найден. Пожалуйста, попробуйте снова.');
-      }
-    });
-  </script>
+    <title>Обработка авторизации</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .error {
+            color: #e74c3c;
+            background: #ffebee;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .success {
+            color: #27ae60;
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body>
-  <p>Идёт авторизация...</p>
-  <p id="status">Обработка запроса</p>
-  <script>
-    // Обновляем статус для пользователя
-    document.getElementById('status').textContent = 
-      'Получен код авторизации. Идет получение токена...';
-  </script>
+    <div class="container">
+        <h1>Обработка авторизации</h1>
+        <div id="statusMessage">Проверка параметров авторизации...</div>
+        <div id="details" style="margin-top: 20px; text-align: left; display: none;">
+            <h3>Детали запроса:</h3>
+            <pre id="requestDetails"></pre>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusMessage = document.getElementById('statusMessage');
+            const detailsEl = document.getElementById('details');
+            const requestDetails = document.getElementById('requestDetails');
+            
+            // Параметры URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const authCode = urlParams.get('code');
+            const errorParam = urlParams.get('error');
+            
+            // Выводим все параметры для отладки
+            const params = {};
+            for (const [key, value] of urlParams.entries()) {
+                params[key] = value;
+            }
+            
+            const logDetails = {
+                timestamp: new Date().toISOString(),
+                url: window.location.href,
+                params: params
+            };
+            
+            requestDetails.textContent = JSON.stringify(logDetails, null, 2);
+            detailsEl.style.display = 'block';
+            
+            // Обработка ошибок
+            if (errorParam) {
+                const errorDescription = urlParams.get('error_description') || 'Неизвестная ошибка';
+                statusMessage.innerHTML = `<div class="error">
+                    <strong>Ошибка авторизации:</strong> ${errorDescription}<br>
+                    Код ошибки: ${errorParam}
+                </div>`;
+                return;
+            }
+            
+            // Проверка кода авторизации
+            if (!authCode) {
+                statusMessage.innerHTML = `<div class="error">
+                    Код авторизации не найден в URL.<br>
+                    Пожалуйста, начните процесс авторизации с главной страницы.
+                </div>`;
+                return;
+            }
+            
+            statusMessage.textContent = 'Код авторизации получен. Идет обмен на токен...';
+            
+            // Данные для запроса токена
+            const tokenData = {
+                grant_type: 'authorization_code',
+                code: authCode,
+                client_id: 'sandbox_client',
+                client_secret: 'sandbox_secret',
+                redirect_uri: 'https://alfonsmaybach.github.io/Arenda_payment/auth-callback.html'
+            };
+            
+            // Выполнение запроса
+            fetch('https://enter-sandbox.tochka.com/uapi/oauth2/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams(tokenData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`HTTP ${response.status}: ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.access_token) {
+                    localStorage.setItem('tochka_token', data.access_token);
+                    statusMessage.innerHTML = `<div class="success">
+                        Авторизация успешно завершена!<br>
+                        Перенаправление на главную страницу...
+                    </div>`;
+                    
+                    // Перенаправление через 2 секунды
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } else {
+                    throw new Error('Токен не получен в ответе: ' + JSON.stringify(data));
+                }
+            })
+            .catch(error => {
+                console.error('Token error:', error);
+                statusMessage.innerHTML = `<div class="error">
+                    Ошибка при получении токена:<br>
+                    ${error.message}
+                </div>`;
+            });
+        });
+    </script>
 </body>
 </html>
