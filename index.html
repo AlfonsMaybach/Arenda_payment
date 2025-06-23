@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оплата Аренды</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: url('https://hdpic.club/uploads/posts/2022-01/1641061909_1-hdpic-club-p-mersedes-chernii-fon-1.jpg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 90%;
+        }
+
+        .pay-button {
+            background: linear-gradient(135deg, #2c3e50, #1a252f);
+            color: white;
+            border: none;
+            padding: 25px 60px;
+            border-radius: 15px;
+            font-size: 28px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                0 0 0 3px rgba(255, 255, 255, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            margin-bottom: 30px;
+        }
+
+        .pay-button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            transition: 0.5s;
+            z-index: -1;
+        }
+
+        .pay-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.7),
+                0 0 0 3px rgba(255, 255, 255, 0.2);
+        }
+
+        .pay-button:hover:before {
+            left: 100%;
+        }
+
+        .pay-button:active {
+            transform: translateY(0) scale(1);
+            box-shadow: 
+                0 5px 20px rgba(0, 0, 0, 0.4),
+                0 0 0 3px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Анимация пульсации */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(52, 152, 219, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); }
+        }
+        
+        .pay-button {
+            animation: pulse 2s infinite;
+        }
+
+        .payment-info {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .payment-info h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            margin: 15px auto;
+            background: #fff;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .bank-details {
+            text-align: left;
+            margin-top: 15px;
+            font-size: 16px;
+        }
+
+        .bank-details div {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="pay-button" id="payButton">Оплатить</button>
+        
+        <div class="payment-info" id="paymentInfo" style="display: none;">
+            <h3>Реквизиты для оплаты</h3>
+            <div class="qr-code">
+                <!-- Замените на реальный QR-код -->
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://alfonsmaybach.github.io/Arenda_payment/" 
+                     alt="QR-код для оплаты" style="width: 100%;">
+            </div>
+            <div class="bank-details">
+                <div><strong>Банк:</strong> Точка Банк</div>
+                <div><strong>Счет:</strong> 40702810500000012345</div>
+                <div><strong>БИК:</strong> 044525999</div>
+                <div><strong>ИНН:</strong> 7710140679</div>
+                <div><strong>КПП:</strong> 775001001</div>
+                <div><strong>Получатель:</strong> ООО "Аренда Авто"</div>
+                <div><strong>Назначение платежа:</strong> Оплата аренды Mercedes</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const payButton = document.getElementById('payButton');
+            const paymentInfo = document.getElementById('paymentInfo');
+            
+            payButton.addEventListener('click', function() {
+                // Переключение видимости реквизитов
+                if (paymentInfo.style.display === 'none') {
+                    paymentInfo.style.display = 'block';
+                    payButton.textContent = 'Скрыть реквизиты';
+                } else {
+                    paymentInfo.style.display = 'none';
+                    payButton.textContent = 'Оплатить';
+                }
+            });
+            
+            // Дополнительно: автоматическое выделение реквизитов при клике
+            paymentInfo.addEventListener('click', function() {
+                const range = document.createRange();
+                range.selectNode(paymentInfo);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+            });
+        });
+    </script>
+</body>
+</html>
