@@ -9,50 +9,139 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif; /* Четкий стандартный шрифт */
+            font-family: 'Arial', sans-serif;
         }
 
+
         body {
-            background: url('https://images.unsplash.com/photo-1494976388901-750835ad5e2a') no-repeat center center fixed;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                        url('https://hdpic.club/uploads/posts/2022-01/1641061909_1-hdpic-club-p-mersedes-chernii-fon-1.jpg') no-repeat center center fixed;
             background-size: cover;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            color: #333;
         }
 
+
         .payment-container {
-            background-color: rgba(255, 255, 255, 0.92); /* Слегка прозрачный белый */
+            background-color: rgba(255, 255, 255, 0.9);
             border-radius: 12px;
-            border: 1px solid #e0e0e0; /* Тонкая серая рамка */
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
             width: 90%;
             max-width: 450px;
             padding: 30px;
+            backdrop-filter: blur(5px);
         }
 
-        /* Остальные стили остаются КАК В ПРЕДЫДУЩЕМ РАБОЧЕМ ВАРИАНТЕ */
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+
         .payment-header h1 {
             color: #2c3e50;
             font-size: 24px;
             font-weight: 600;
             margin-bottom: 8px;
-            font-family: 'Arial', sans-serif; /* Фиксим шрифт */
         }
 
+
+        .payment-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+
+        .input-group label {
+            font-size: 14px;
+            color: #555;
+            font-weight: 500;
+        }
+
+
         .input-group input {
-            border: 1px solid #ddd !important; /* Жестко задаем рамку */
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 13px;
+            height: 16px;
+            margin-top: 4px;
+        }
+
+
+        .submit-btn {
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+
+        .submit-btn:hover {
+            background-color: #1a252f;
+            transform: translateY(-2px);
+        }
+
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+
+        .info-text {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-align: center;
+            margin-top: 20px;
+            line-height: 1.4;
+        }
+
+
+        @media (max-width: 480px) {
+            .payment-container {
+                padding: 25px 20px;
+                width: 95%;
+            }
+            
+            .payment-header h1 {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- ВЕСЬ HTML КОПИРУЕТСЯ БЕЗ ИЗМЕНЕНИЙ ИЗ ПРЕДЫДУЩЕГО РАБОЧЕГО ВАРИАНТА -->
-    <div class="payment-container">
-        <!-- ... ваш существующий HTML ... -->
-    </div>
-</body>
-</html>
-    <!-- Основная разметка -->
     <div class="payment-container">
         <div class="payment-header">
             <h1>Оплата Аренды</h1>
@@ -67,27 +156,25 @@
             
             <button type="submit" class="submit-btn">Оплатить</button>
             
-            <p class="info-text"></p>
+            <p class="info-text">Данные сохраняются в вашем браузере для быстрых оплат в будущем.</p>
         </form>
     </div>
 
-    <!-- JavaScript логика -->
+
     <script>
-        // Запуск после загрузки страницы
         document.addEventListener('DOMContentLoaded', function() {
             const paymentForm = document.getElementById('paymentForm');
             const contactInput = document.getElementById('contact');
             const errorMessage = document.getElementById('errorMessage');
             
-            // Проверяем сохраненные данные
+            // Загрузка сохраненных данных
             const savedContact = localStorage.getItem('rentalPaymentContact');
             if (savedContact) {
                 contactInput.value = savedContact;
             }
             
-            // Обработка отправки формы
             paymentForm.addEventListener('submit', function(e) {
-                e.preventDefault(); // Отменяем стандартную отправку
+                e.preventDefault();
                 
                 const contactValue = contactInput.value.trim();
                 
@@ -97,28 +184,29 @@
                     return;
                 }
                 
-                // Сохраняем в браузере
+                // Сохранение в LocalStorage
                 localStorage.setItem('rentalPaymentContact', contactValue);
                 
-                // Определяем тип ввода (email/телефон)
+                // Проверка, email это или телефон
                 const isEmail = contactValue.includes('@');
+                
+                // Перенаправление на платежную форму Точки Банка
+                // ВАЖНО: Замените YOUR_FORM_ID на реальный ID формы
                 const baseUrl = 'https://oplata.tochka.com/pay/YOUR_FORM_ID';
                 const params = new URLSearchParams();
                 
-                // Формируем параметры для перехода
                 if (isEmail) {
                     params.append('email', contactValue);
-                    params.append('phone', contactValue);
+                    params.append('phone', contactValue); // Передаем email и в phone тоже
                 } else {
                     params.append('phone', contactValue);
-                    params.append('email', contactValue);
+                    params.append('email', contactValue); // Передаем телефон и в email тоже
                 }
                 
-                // Перенаправляем на оплату
                 window.location.href = `${baseUrl}?${params.toString()}`;
             });
             
-            // Сбрасываем ошибку при вводе
+            // Сброс ошибки при вводе
             contactInput.addEventListener('input', function() {
                 if (errorMessage.textContent) {
                     errorMessage.textContent = '';
