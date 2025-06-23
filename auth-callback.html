@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Обработка авторизации</title>
+  <script>
+    // Этот код будет получать токен после перенаправления из Точки
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const authCode = urlParams.get('code');
+
+      if (authCode) {
+        fetch('https://enter.tochka.com/uapi/oauth2/token', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            grant_type: 'authorization_code',
+            code: authCode,
+            client_id: 'ВАШ_CLIENT_ID', // Замените на реальный
+            client_secret: 'ВАШ_CLIENT_SECRET', // Замените на реальный
+            redirect_uri: window.location.href.split('?')[0] // Автоматически определит URL
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          localStorage.setItem('tochka_token', data.access_token);
+          window.location.href = 'index.html?auth=success'; // Возврат на главную
+        })
+        .catch(error => {
+          console.error('Ошибка:', error);
+          alert('Авторизация не удалась');
+        });
+      }
+    });
+  </script>
+</head>
+<body>
+  <p>Идёт авторизация...</p>
+</body>
+</html>
