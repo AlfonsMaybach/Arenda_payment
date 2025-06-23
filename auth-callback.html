@@ -1,14 +1,19 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <title>Обработка авторизации</title>
   <script>
-    // Этот код будет получать токен после перенаправления из Точки
     document.addEventListener('DOMContentLoaded', function() {
       const urlParams = new URLSearchParams(window.location.search);
       const authCode = urlParams.get('code');
 
+
       if (authCode) {
+        // ВАЖНО: Используем реальные данные из Точки
+        const CLIENT_ID = 'dd54729143a249c887461d9df60f87d1';
+        const CLIENT_SECRET = '94171e50727d47008c22d0914d4d1a12';
+        const REDIRECT_URI = 'https://alfonsmaybach.github.io/Arenda_payment/auth-callback.html';
+        
         fetch('https://enter.tochka.com/uapi/oauth2/token', {
           method: 'POST',
           headers: {
@@ -17,20 +22,31 @@
           body: new URLSearchParams({
             grant_type: 'authorization_code',
             code: authCode,
-            client_id: 'dd54729143a249c887461d9df60f87d1', // Замените на реальный
-            client_secret: '94171e50727d47008c22d0914d4d1a12', // Замените на реальный
-            redirect_uri: window.location.href.split('?')[0] // Автоматически определит URL
+            client_id: CLIENT_ID,
+            client_secret: CLIENT_SECRET,
+            redirect_uri: REDIRECT_URI // Используем константу
           })
         })
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Ошибка HTTP: ${response.status}`);
+          }
+          return response.json();
+        })
         .then(data => {
-          localStorage.setItem('tochka_token', data.access_token);
-          window.location.href = 'index.html?auth=success'; // Возврат на главную
+          if (data.access_token) {
+            localStorage.setItem('tochka_token', data.access_token);
+            window.location.href = 'index.html?auth=success';
+          } else {
+            throw new Error('Токен не получен');
+          }
         })
         .catch(error => {
-          console.error('Ошибка:', error);
-          alert('Авторизация не удалась');
+          console.error('Ошибка авторизации:', error);
+          alert(`Ошибка авторизации: ${error.message}`);
         });
+      } else {
+        alert('Код авторизации не получен');
       }
     });
   </script>
