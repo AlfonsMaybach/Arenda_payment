@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Оплата Аренды Mercedes</title>
+    <title>Оплата Аренды</title>
     <style>
         * {
             margin: 0;
@@ -30,7 +30,7 @@
         }
 
         .payment-form {
-            background-color: rgba(255, 255, 255, 0.95);
+            background-color: rgba(255, 255, 255, 0.55);
             border-radius: 15px;
             padding: 30px;
             max-width: 500px;
@@ -169,7 +169,7 @@
 <body>
     <div class="container">
         <form id="paymentForm" class="payment-form">
-            <h1>Оплата Аренды Mercedes</h1>
+            <h1>Оплата Аренды</h1>
             
             <div class="form-group">
                 <label for="amount">Сумма оплаты (₽)</label>
@@ -235,9 +235,9 @@
                 // Проверка валидности
                 const amount = document.getElementById('amount').value;
                 const contact = contactInput.value.trim();
-                
-                if (!amount || amount < 1000) {
-                    showError('Минимальная сумма оплаты - 1000₽');
+
+                if (!amount || amount < 10) {
+                    showError('Минимальная сумма оплаты - 10₽');
                     return;
                 }
                 
@@ -252,7 +252,7 @@
                 
                 try {
                     // Ваш JWT токен (замените на реальный)
-                    const jwtToken = 'ваш_jwt_токен_от_точки';
+                    const jwtToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJmMjg0YWQ2NDMxODI1YzYxYzExMDQ2ZmE1MjgxNDdhOCJ9.Dszv0dk1DuAf5rtnTOCIWv3HewzLNnOVlcXBXhbPk0-9CWwIhkUdltv8xJ6cEmP5u3k6jdzXBLCS-KO8d5id6peXhx_vmNj35bhtatunMvmGPx3HJ1WMr8sXh_IvP80zd0uMkLSLJvcu-MONLk2Rssy7vf5U1oQpB3vQLeyS_fJrkw5CrsvVXgW24upjjEgfcgSnrMrSHONZNIPJ_SyNTrc8UzSmgB4CiWUQguKH6M6u1JxOXj_P7LKgvT0ao0B5-JlakZHZliPLQavo37lq2Rpe63ORWXXFlaeIjY5tx3KbI4azd_TqIkknEB2jyHM_9tXiOiBvxD93wVVZD5VfkfFvln4GFEhpPP1cLvsLhM7_cwiY-O6BZOf-Q3yt4KeT8B1Q0dCYdrkvadbEAgVez1KXX5ULyqTHRLZlakIyRryDLtb_RUkxny3iMnF_1dy9UaBBBMeGAngID7I0DzerQxd26Djhwx6-M5HoLaXScM7jBguDawwGBoWTzVRYITrz';
                     
                     // Отправка данных на API
                     const response = await fetch('https://api.tochka.com/payment', {
