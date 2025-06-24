@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Оплата Аренды</title>
+    <title>Оплата Аренды Mercedes</title>
     <style>
+        /* Стили остаются такими же, как в предыдущем коде */
         * {
             margin: 0;
             padding: 0;
@@ -30,7 +31,7 @@
         }
 
         .payment-form {
-            background-color: rgba(255, 255, 255, 0.55);
+            background-color: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
             padding: 30px;
             max-width: 500px;
@@ -169,7 +170,7 @@
 <body>
     <div class="container">
         <form id="paymentForm" class="payment-form">
-            <h1>Оплата Аренды</h1>
+            <h1>Оплата Аренды Mercedes</h1>
             
             <div class="form-group">
                 <label for="amount">Сумма оплаты (₽)</label>
@@ -203,22 +204,29 @@
             const successMessage = document.getElementById('successMessage');
             const contactInput = document.getElementById('contact');
             
-            // Автоматическое определение типа ввода (телефон или email)
-            contactInput.addEventListener('input', function() {
-                const value = this.value.trim();
-                if (value.includes('@')) {
-                    this.type = 'email';
-                } else if (value.match(/[a-zA-Z]/)) {
-                    this.type = 'email';
-                } else {
-                    this.type = 'tel';
-                    // Форматирование телефона
-                    let phone = value.replace(/\D/g, '');
-                    if (phone.length > 0) phone = '+7 (' + phone.substring(1, 4);
-                    if (phone.length > 7) phone += ') ' + phone.substring(7, 10);
-                    if (phone.length > 10) phone += '-' + phone.substring(10, 12);
-                    if (phone.length > 12) phone += '-' + phone.substring(12, 14);
-                    this.value = phone;
+            // Новая функция форматирования телефона
+            contactInput.addEventListener('input', function(e) {
+                const input = e.target;
+                const value = input.value.replace(/\D/g, '');
+                
+                // Если начинаем вводить телефон
+                if (!value.includes('@') && !value.match(/[a-zA-Z]/)) {
+                    let formattedValue = '';
+                    
+                    if (value.length > 0) {
+                        formattedValue = '+7 ' + value.substring(1, 4);
+                    }
+                    if (value.length >= 4) {
+                        formattedValue += ' ' + value.substring(4, 7);
+                    }
+                    if (value.length >= 7) {
+                        formattedValue += '-' + value.substring(7, 9);
+                    }
+                    if (value.length >= 9) {
+                        formattedValue += '-' + value.substring(9, 11);
+                    }
+                    
+                    input.value = formattedValue;
                 }
             });
             
@@ -232,12 +240,13 @@
                 errorMessage.style.display = 'none';
                 successMessage.style.display = 'none';
                 
-                // Проверка валидности
+                // Собираем данные
                 const amount = document.getElementById('amount').value;
                 const contact = contactInput.value.trim();
-
-                if (!amount || amount < 10) {
-                    showError('Минимальная сумма оплаты - 10₽');
+                
+                // Валидация
+                if (!amount || amount < 1000) {
+                    showError('Минимальная сумма оплаты - 1000₽');
                     return;
                 }
                 
@@ -246,50 +255,47 @@
                     return;
                 }
                 
-                // Определяем тип контакта
+                // Определяем тип контакта и очищаем телефон от форматирования
                 const isEmail = contact.includes('@');
                 const contactValue = isEmail ? contact : contact.replace(/\D/g, '');
                 
+                // Проверка телефона (должен быть 11 цифр с кодом страны)
+                if (!isEmail && contactValue.length !== 11) {
+                    showError('Введите корректный номер телефона (11 цифр)');
+                    return;
+                }
+                
+                // Проверка email (простая валидация)
+                if (isEmail && !contact.includes('@') && !contact.includes('.')) {
+                    showError('Введите корректный email');
+                    return;
+                }
+                
                 try {
-                    // Ваш JWT токен (замените на реальный)
-                    const jwtToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJmMjg0YWQ2NDMxODI1YzYxYzExMDQ2ZmE1MjgxNDdhOCJ9.Dszv0dk1DuAf5rtnTOCIWv3HewzLNnOVlcXBXhbPk0-9CWwIhkUdltv8xJ6cEmP5u3k6jdzXBLCS-KO8d5id6peXhx_vmNj35bhtatunMvmGPx3HJ1WMr8sXh_IvP80zd0uMkLSLJvcu-MONLk2Rssy7vf5U1oQpB3vQLeyS_fJrkw5CrsvVXgW24upjjEgfcgSnrMrSHONZNIPJ_SyNTrc8UzSmgB4CiWUQguKH6M6u1JxOXj_P7LKgvT0ao0B5-JlakZHZliPLQavo37lq2Rpe63ORWXXFlaeIjY5tx3KbI4azd_TqIkknEB2jyHM_9tXiOiBvxD93wVVZD5VfkfFvln4GFEhpPP1cLvsLhM7_cwiY-O6BZOf-Q3yt4KeT8B1Q0dCYdrkvadbEAgVez1KXX5ULyqTHRLZlakIyRryDLtb_RUkxny3iMnF_1dy9UaBBBMeGAngID7I0DzerQxd26Djhwx6-M5HoLaXScM7jBguDawwGBoWTzVRYITrz';
-                    
-                    // Отправка данных на API
-                    const response = await fetch('https://api.tochka.com/payment', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${jwtToken}`
-                        },
-                        body: JSON.stringify({
-                            amount: amount,
-                            [isEmail ? 'email' : 'phone']: contactValue,
-                            purpose: 'Оплата аренды автомобиля', // Фиксированное назначение
-                            redirectUrl: 'https://alfonsmaybach.github.io/Arenda_payment/success.html'
-                        })
+                    // Здесь будет реальный запрос к API
+                    console.log('Отправка данных:', {
+                        amount: amount,
+                        contact: isEmail ? 'email' : 'phone',
+                        value: contactValue,
+                        purpose: 'Оплата аренды автомобиля'
                     });
                     
-                    const result = await response.json();
-                    
-                    if (response.ok) {
-                        // Успешный платеж
+                    // Имитация успешного ответа от API
+                    setTimeout(() => {
                         successMessage.textContent = 'Платеж успешно обработан! Чек будет отправлен на указанные контакты.';
                         successMessage.style.display = 'block';
+                        loading.style.display = 'none';
+                        payButton.disabled = false;
                         
                         // Перенаправление на страницу успеха
                         setTimeout(() => {
                             window.location.href = 'success.html';
                         }, 2000);
-                    } else {
-                        // Ошибка платежа
-                        throw new Error(result.message || 'Ошибка при обработке платежа');
-                    }
+                    }, 1500);
+                    
                 } catch (error) {
                     console.error('Ошибка:', error);
-                    showError(error.message);
-                } finally {
-                    loading.style.display = 'none';
-                    payButton.disabled = false;
+                    showError('Ошибка при обработке платежа: ' + error.message);
                 }
             });
             
