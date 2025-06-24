@@ -243,63 +243,40 @@
             const successMessage = document.getElementById('successMessage');
             const contactInput = document.getElementById('contact');
             
-            let isFormatting = false;
-            
-            // Улучшенное форматирование телефона с возможностью удаления
+            // Простое форматирование телефона без сложной логики
             contactInput.addEventListener('input', function(e) {
-                if (isFormatting) return;
-                
-                const input = e.target;
-                const position = input.selectionStart;
-                const value = input.value;
+                const value = e.target.value;
                 
                 // Если вводится email - не форматируем
                 if (value.includes('@') || /[a-zA-Zа-яА-Я]/.test(value)) {
                     return;
                 }
                 
-                // Получаем только цифры
-                let digits = value.replace(/\D/g, '');
+                // Удаляем все нецифровые символы
+                const digits = value.replace(/\D/g, '');
                 
-                // Если удаляем символы - пропускаем форматирование
-                if (e.inputType === 'deleteContentBackward' || e.inputType === 'deleteContentForward') {
-                    return;
-                }
-                
-                // Форматируем только если цифр больше 1
-                if (digits.length > 1) {
-                    isFormatting = true;
+                // Форматируем только если есть цифры
+                if (digits.length > 0) {
+                    let formattedValue = '+7';
                     
-                    digits = digits.substring(1); // Убираем первую 7 или 8
-                    let formattedValue = '+7 ';
+                    // Добавляем остальные цифры с разделителями
+                    if (digits.length > 1) formattedValue += ' ' + digits.substring(1, 4);
+                    if (digits.length > 4) formattedValue += ' ' + digits.substring(4, 7);
+                    if (digits.length > 7) formattedValue += '-' + digits.substring(7, 9);
+                    if (digits.length > 9) formattedValue += '-' + digits.substring(9, 11);
                     
-                    if (digits.length > 0) formattedValue += digits.substring(0, 3);
-                    if (digits.length > 3) formattedValue += ' ' + digits.substring(3, 6);
-                    if (digits.length > 6) formattedValue += '-' + digits.substring(6, 8);
-                    if (digits.length > 8) formattedValue += '-' + digits.substring(8, 10);
+                    // Сохраняем позицию курсора
+                    const cursorPos = e.target.selectionStart;
                     
-                    input.value = formattedValue;
+                    // Устанавливаем отформатированное значение
+                    e.target.value = formattedValue;
                     
                     // Восстанавливаем позицию курсора
                     setTimeout(() => {
-                        input.setSelectionRange(position, position);
-                        isFormatting = false;
+                        // Если курсор был в начале, оставляем его там
+                        const newCursorPos = cursorPos <= 3 ? cursorPos : e.target.value.length;
+                        e.target.setSelectionRange(newCursorPos, newCursorPos);
                     }, 0);
-                }
-            });
-            
-            // Обработка удаления для телефона
-            contactInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Backspace' && !contactInput.value.includes('@')) {
-                    const value = contactInput.value;
-                    const position = contactInput.selectionStart;
-                    
-                    // Если удаляем разделитель - удаляем и предыдущую цифру
-                    if ([' ', '-'].includes(value[position-1])) {
-                        e.preventDefault();
-                        contactInput.value = value.substring(0, position-2) + value.substring(position);
-                        contactInput.setSelectionRange(position-2, position-2);
-                    }
                 }
             });
             
