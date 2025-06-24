@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оплата Успешна</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: url('https://hdpic.club/uploads/posts/2022-01/1641061909_1-hdpic-club-p-mersedes-chernii-fon-1.jpg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .success-container {
+            text-align: center;
+            max-width: 90%;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.8s ease-out;
+            max-width: 600px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .success-icon {
+            font-size: 80px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+            text-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        p {
+            color: #34495e;
+            margin-bottom: 30px;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .return-button {
+            background: linear-gradient(135deg, #2c3e50, #1a252f);
+            color: white;
+            border: none;
+            padding: 18px 45px;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                0 0 0 3px rgba(255, 255, 255, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .return-button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            transition: 0.5s;
+            z-index: -1;
+        }
+
+        .return-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.7),
+                0 0 0 3px rgba(255, 255, 255, 0.2);
+        }
+
+        .return-button:hover:before {
+            left: 100%;
+        }
+
+        .return-button:active {
+            transform: translateY(0);
+        }
+
+        .details {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: rgba(44, 62, 80, 0.1);
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        .details div {
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-icon">✓</div>
+        <h1>ОПЛАТА УСПЕШНО ЗАВЕРШЕНА</h1>
+        <p>Благодарим вас за оплату аренды Mercedes. Транзакция прошла успешно.</p>
+        <p>Чек был отправлен на ваш email. Для получения автомобиля обратитесь к менеджеру.</p>
+        
+        <button class="return-button" onclick="window.location.href='https://alfonsmaybach.github.io/Arenda_payment/'">
+            Вернуться на сайт
+        </button>
+        
+        <div class="details">
+            <div><strong>Дата:</strong> <span id="current-date"></span></div>
+            <div><strong>Сумма:</strong> 10 000 ₽</div>
+            <div><strong>Номер транзакции:</strong> <span id="transaction-id"></span></div>
+        </div>
+    </div>
+
+    <script>
+        // Установка текущей даты
+        const now = new Date();
+        const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+        document.getElementById('current-date').textContent = now.toLocaleDateString('ru-RU', options);
+        
+        // Генерация случайного номера транзакции
+        document.getElementById('transaction-id').textContent = 'TXN-' + Math.floor(Math.random() * 10000000000);
+    </script>
+</body>
+</html>
