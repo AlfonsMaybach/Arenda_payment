@@ -29,7 +29,7 @@
             padding: 20px;
         }
 
-        .payment-form {
+        .payment-form, .success-content {
             background-color: rgba(255, 255, 255, 0.55);
             border-radius: 15px;
             padding: 30px;
@@ -87,13 +87,16 @@
             font-weight: 700;
             cursor: pointer;
             transition: all 0.4s ease;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                0 0 0 3px rgba(255, 255, 255, 0.1);
             text-transform: uppercase;
             letter-spacing: 1px;
             width: 100%;
             margin-top: 10px;
             position: relative;
             overflow: hidden;
+            z-index: 1;
         }
 
         .pay-button:before {
@@ -105,9 +108,10 @@
             height: 100%;
             background: linear-gradient(90deg, 
                 transparent, 
-                rgba(255, 255, 255, 0.2), 
+                rgba(255, 255, 255, 0.3), 
                 transparent);
-            transition: 0.5s;
+            transition: 0.6s;
+            z-index: -1;
         }
 
         .pay-button:hover:before {
@@ -116,11 +120,23 @@
 
         .pay-button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.7),
+                0 0 0 3px rgba(255, 255, 255, 0.2);
         }
 
         .pay-button:active {
             transform: translateY(0);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(44, 62, 80, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(44, 62, 80, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(44, 62, 80, 0); }
+        }
+        
+        .pay-button {
+            animation: pulse 2s infinite;
         }
 
         .loading {
@@ -150,22 +166,10 @@
             display: none;
         }
 
-        .success-message {
-            color: #27ae60;
-            margin-top: 15px;
-            font-weight: bold;
-            display: none;
-        }
-
-        .contact-hint {
-            font-size: 14px;
-            color: #7f8c8d;
-            margin-top: 5px;
-        }
-
         .success-content {
             display: none;
             text-align: center;
+            background-color: rgba(255, 255, 255, 0.55);
         }
 
         .success-icon {
@@ -173,12 +177,29 @@
             color: #4CAF50;
             margin-bottom: 20px;
         }
+
+        .success-text {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .success-details {
+            color: #34495e;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .contact-hint {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div id="paymentForm" class="payment-form">
-            <h1>Оплата Аренды Mercedes</h1>
+            <h1>Оплата Аренды</h1>
             
             <div class="form-group">
                 <label for="amount">Сумма оплаты (₽)</label>
@@ -203,13 +224,11 @@
 
         <div id="successMessage" class="success-content">
             <div class="success-icon">✓</div>
-            <h2 style="color: #2c3e50; margin-bottom: 15px;">ОПЛАТА ПРОШЛА УСПЕШНО</h2>
-            <p style="margin-bottom: 10px;">Сумма: <strong id="successAmount"></strong></p>
-            <p style="margin-bottom: 10px;">Чек отправлен на: <strong id="successContact"></strong></p>
-            <p style="margin-bottom: 25px;">Номер транзакции: <strong id="successTransaction"></strong></p>
-            <button onclick="resetForm()" 
-                    style="background: #2c3e50; color: white; border: none; padding: 12px 25px; 
-                           border-radius: 5px; cursor: pointer; font-size: 16px;">
+            <h2 class="success-text">ОПЛАТА УСПЕШНА</h2>
+            <p class="success-details">Сумма: <strong id="successAmount"></strong></p>
+            <p class="success-details">Чек отправлен на: <strong id="successContact"></strong></p>
+            <p class="success-details">Номер транзакции: <strong id="successTransaction"></strong></p>
+            <button onclick="resetForm()" class="pay-button" style="margin-top: 20px; padding: 12px 25px; font-size: 16px;">
                 Новый платеж
             </button>
         </div>
@@ -224,45 +243,63 @@
             const successMessage = document.getElementById('successMessage');
             const contactInput = document.getElementById('contact');
             
-            let lastPhoneLength = 0;
+            let isFormatting = false;
             
-            // Улучшенное форматирование телефона
+            // Улучшенное форматирование телефона с возможностью удаления
             contactInput.addEventListener('input', function(e) {
-                const value = e.target.value;
+                if (isFormatting) return;
+                
+                const input = e.target;
+                const position = input.selectionStart;
+                const value = input.value;
                 
                 // Если вводится email - не форматируем
                 if (value.includes('@') || /[a-zA-Zа-яА-Я]/.test(value)) {
                     return;
                 }
                 
-                // Форматирование телефона
-                const digits = value.replace(/\D/g, '');
-                let formattedValue = '';
+                // Получаем только цифры
+                let digits = value.replace(/\D/g, '');
                 
-                if (digits.length > 0) formattedValue = '+7 ' + digits.substring(1, 4);
-                if (digits.length >= 4) formattedValue += ' ' + digits.substring(4, 7);
-                if (digits.length >= 7) formattedValue += '-' + digits.substring(7, 9);
-                if (digits.length >= 9) formattedValue += '-' + digits.substring(9, 11);
+                // Если удаляем символы - пропускаем форматирование
+                if (e.inputType === 'deleteContentBackward' || e.inputType === 'deleteContentForward') {
+                    return;
+                }
                 
-                // Сохраняем позицию курсора
-                const cursorPos = e.target.selectionStart;
-                const diff = formattedValue.length - value.length;
-                
-                e.target.value = formattedValue;
-                lastPhoneLength = digits.length;
-                
-                // Корректируем позицию курсора
-                if (digits.length < lastPhoneLength && cursorPos > 0) {
-                    e.target.setSelectionRange(cursorPos, cursorPos);
-                } else if (cursorPos > 0 && diff !== 0) {
-                    e.target.setSelectionRange(cursorPos + diff, cursorPos + diff);
+                // Форматируем только если цифр больше 1
+                if (digits.length > 1) {
+                    isFormatting = true;
+                    
+                    digits = digits.substring(1); // Убираем первую 7 или 8
+                    let formattedValue = '+7 ';
+                    
+                    if (digits.length > 0) formattedValue += digits.substring(0, 3);
+                    if (digits.length > 3) formattedValue += ' ' + digits.substring(3, 6);
+                    if (digits.length > 6) formattedValue += '-' + digits.substring(6, 8);
+                    if (digits.length > 8) formattedValue += '-' + digits.substring(8, 10);
+                    
+                    input.value = formattedValue;
+                    
+                    // Восстанавливаем позицию курсора
+                    setTimeout(() => {
+                        input.setSelectionRange(position, position);
+                        isFormatting = false;
+                    }, 0);
                 }
             });
             
-            // Обработка backspace для телефона
+            // Обработка удаления для телефона
             contactInput.addEventListener('keydown', function(e) {
                 if (e.key === 'Backspace' && !contactInput.value.includes('@')) {
-                    lastPhoneLength = contactInput.value.replace(/\D/g, '').length;
+                    const value = contactInput.value;
+                    const position = contactInput.selectionStart;
+                    
+                    // Если удаляем разделитель - удаляем и предыдущую цифру
+                    if ([' ', '-'].includes(value[position-1])) {
+                        e.preventDefault();
+                        contactInput.value = value.substring(0, position-2) + value.substring(position);
+                        contactInput.setSelectionRange(position-2, position-2);
+                    }
                 }
             });
             
@@ -340,6 +377,7 @@
             document.getElementById('amount').value = '';
             document.getElementById('contact').value = '';
             document.getElementById('payButton').disabled = false;
+            document.getElementById('errorMessage').style.display = 'none';
         }
     </script>
 </body>
