@@ -191,8 +191,9 @@
 
         .contact-hint {
             font-size: 14px;
-            color: #7f8c8d;
+            color: #2c3e50; /* Изменен цвет на синий как заголовок */
             margin-top: 5px;
+            font-weight: 600; /* Более жирный шрифт */
         }
     </style>
 </head>
@@ -243,40 +244,24 @@
             const successMessage = document.getElementById('successMessage');
             const contactInput = document.getElementById('contact');
             
-            // Простое форматирование телефона без сложной логики
+            // Простой ввод телефона без форматирования
             contactInput.addEventListener('input', function(e) {
-                const value = e.target.value;
-                
-                // Если вводится email - не форматируем
-                if (value.includes('@') || /[a-zA-Zа-яА-Я]/.test(value)) {
+                // Если вводится email - ничего не делаем
+                if (this.value.includes('@') || /[a-zA-Zа-яА-Я]/.test(this.value)) {
                     return;
                 }
                 
-                // Удаляем все нецифровые символы
-                const digits = value.replace(/\D/g, '');
+                // Просто оставляем цифры и + в начале
+                this.value = this.value.replace(/[^\d+]/g, '');
                 
-                // Форматируем только если есть цифры
-                if (digits.length > 0) {
-                    let formattedValue = '+7';
-                    
-                    // Добавляем остальные цифры с разделителями
-                    if (digits.length > 1) formattedValue += ' ' + digits.substring(1, 4);
-                    if (digits.length > 4) formattedValue += ' ' + digits.substring(4, 7);
-                    if (digits.length > 7) formattedValue += '-' + digits.substring(7, 9);
-                    if (digits.length > 9) formattedValue += '-' + digits.substring(9, 11);
-                    
-                    // Сохраняем позицию курсора
-                    const cursorPos = e.target.selectionStart;
-                    
-                    // Устанавливаем отформатированное значение
-                    e.target.value = formattedValue;
-                    
-                    // Восстанавливаем позицию курсора
-                    setTimeout(() => {
-                        // Если курсор был в начале, оставляем его там
-                        const newCursorPos = cursorPos <= 3 ? cursorPos : e.target.value.length;
-                        e.target.setSelectionRange(newCursorPos, newCursorPos);
-                    }, 0);
+                // Ограничиваем длину (1 символ + и 10 цифр)
+                if (this.value.length > 11) {
+                    this.value = this.value.substring(0, 11);
+                }
+                
+                // Добавляем +7 если его нет
+                if (!this.value.startsWith('+7') && this.value.length > 0) {
+                    this.value = '+7' + this.value.replace(/^\+/, '').substring(1);
                 }
             });
             
@@ -306,7 +291,7 @@
                 const contactValue = isEmail ? contact : contact.replace(/\D/g, '');
                 
                 if (!isEmail && contactValue.length !== 11) {
-                    showError('Введите корректный номер телефона (11 цифр)');
+                    showError('Введите корректный номер телефона (11 цифр с кодом страны)');
                     return;
                 }
                 
