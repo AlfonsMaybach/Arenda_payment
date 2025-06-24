@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Оплата Аренды</title>
+    <title>Оплата Аренды Mercedes</title>
     <style>
         * {
             margin: 0;
@@ -25,27 +25,77 @@
         .container {
             text-align: center;
             max-width: 90%;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .payment-form {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            border-color: #2c3e50;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.2);
         }
 
         .pay-button {
             background: linear-gradient(135deg, #2c3e50, #1a252f);
             color: white;
             border: none;
-            padding: 25px 60px;
-            border-radius: 15px;
-            font-size: 28px;
+            padding: 18px;
+            border-radius: 10px;
+            font-size: 20px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.4s ease;
-            box-shadow: 
-                0 10px 30px rgba(0, 0, 0, 0.5),
-                0 0 0 3px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
+            width: 100%;
+            margin-top: 10px;
             position: relative;
             overflow: hidden;
-            z-index: 1;
-            margin-bottom: 30px;
         }
 
         .pay-button:before {
@@ -60,118 +110,195 @@
                 rgba(255, 255, 255, 0.2), 
                 transparent);
             transition: 0.5s;
-            z-index: -1;
-        }
-
-        .pay-button:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 
-                0 15px 40px rgba(0, 0, 0, 0.7),
-                0 0 0 3px rgba(255, 255, 255, 0.2);
         }
 
         .pay-button:hover:before {
             left: 100%;
         }
 
+        .pay-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+        }
+
         .pay-button:active {
-            transform: translateY(0) scale(1);
-            box-shadow: 
-                0 5px 20px rgba(0, 0, 0, 0.4),
-                0 0 0 3px rgba(255, 255, 255, 0.1);
+            transform: translateY(0);
         }
 
-        /* Анимация пульсации */
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(52, 152, 219, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); }
-        }
-        
-        .pay-button {
-            animation: pulse 2s infinite;
+        .loading {
+            display: none;
+            margin-top: 20px;
         }
 
-        .payment-info {
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            padding: 20px;
-            max-width: 500px;
+        .spinner {
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 5px solid #2c3e50;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
             margin: 0 auto;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
-        .payment-info h3 {
-            color: #2c3e50;
-            margin-bottom: 15px;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        .qr-code {
-            width: 200px;
-            height: 200px;
-            margin: 15px auto;
-            background: #fff;
-            padding: 10px;
-            border-radius: 5px;
-        }
-
-        .bank-details {
-            text-align: left;
+        .error-message {
+            color: #e74c3c;
             margin-top: 15px;
-            font-size: 16px;
+            font-weight: bold;
+            display: none;
         }
 
-        .bank-details div {
-            margin-bottom: 8px;
+        .success-message {
+            color: #27ae60;
+            margin-top: 15px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .contact-hint {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <button class="pay-button" id="payButton">Оплатить</button>
-        
-        <div class="payment-info" id="paymentInfo" style="display: none;">
-            <h3>Реквизиты для оплаты</h3>
-            <div class="qr-code">
-                <!-- Замените на реальный QR-код -->
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://alfonsmaybach.github.io/Arenda_payment/" 
-                     alt="QR-код для оплаты" style="width: 100%;">
+        <form id="paymentForm" class="payment-form">
+            <h1>Оплата Аренды Mercedes</h1>
+            
+            <div class="form-group">
+                <label for="amount">Сумма оплаты (₽)</label>
+                <input type="number" id="amount" name="amount" min="1000" step="100" required placeholder="10000">
             </div>
-            <div class="bank-details">
-                <div><strong>Банк:</strong> Точка Банк</div>
-                <div><strong>Счет:</strong> 40702810500000012345</div>
-                <div><strong>БИК:</strong> 044525999</div>
-                <div><strong>ИНН:</strong> 7710140679</div>
-                <div><strong>КПП:</strong> 775001001</div>
-                <div><strong>Получатель:</strong> ООО "Аренда Авто"</div>
-                <div><strong>Назначение платежа:</strong> Оплата аренды Mercedes</div>
+            
+            <div class="form-group">
+                <label for="contact">Телефон или Email</label>
+                <input type="text" id="contact" name="contact" required placeholder="+7 (999) 123-45-67 или your@email.com">
+                <div class="contact-hint">Чек будет отправлен на указанный телефон или email</div>
             </div>
-        </div>
+            
+            <button type="submit" class="pay-button" id="payButton">Оплатить</button>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Обработка платежа...</p>
+            </div>
+            
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+        </form>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const paymentForm = document.getElementById('paymentForm');
             const payButton = document.getElementById('payButton');
-            const paymentInfo = document.getElementById('paymentInfo');
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const contactInput = document.getElementById('contact');
             
-            payButton.addEventListener('click', function() {
-                // Переключение видимости реквизитов
-                if (paymentInfo.style.display === 'none') {
-                    paymentInfo.style.display = 'block';
-                    payButton.textContent = 'Скрыть реквизиты';
+            // Автоматическое определение типа ввода (телефон или email)
+            contactInput.addEventListener('input', function() {
+                const value = this.value.trim();
+                if (value.includes('@')) {
+                    this.type = 'email';
+                } else if (value.match(/[a-zA-Z]/)) {
+                    this.type = 'email';
                 } else {
-                    paymentInfo.style.display = 'none';
-                    payButton.textContent = 'Оплатить';
+                    this.type = 'tel';
+                    // Форматирование телефона
+                    let phone = value.replace(/\D/g, '');
+                    if (phone.length > 0) phone = '+7 (' + phone.substring(1, 4);
+                    if (phone.length > 7) phone += ') ' + phone.substring(7, 10);
+                    if (phone.length > 10) phone += '-' + phone.substring(10, 12);
+                    if (phone.length > 12) phone += '-' + phone.substring(12, 14);
+                    this.value = phone;
                 }
             });
             
-            // Дополнительно: автоматическое выделение реквизитов при клике
-            paymentInfo.addEventListener('click', function() {
-                const range = document.createRange();
-                range.selectNode(paymentInfo);
-                window.getSelection().removeAllRanges();
-                window.getSelection().addRange(range);
+            // Отправка формы
+            paymentForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Показать загрузку
+                payButton.disabled = true;
+                loading.style.display = 'block';
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'none';
+                
+                // Проверка валидности
+                const amount = document.getElementById('amount').value;
+                const contact = contactInput.value.trim();
+                
+                if (!amount || amount < 1000) {
+                    showError('Минимальная сумма оплаты - 1000₽');
+                    return;
+                }
+                
+                if (!contact) {
+                    showError('Введите телефон или email');
+                    return;
+                }
+                
+                // Определяем тип контакта
+                const isEmail = contact.includes('@');
+                const contactValue = isEmail ? contact : contact.replace(/\D/g, '');
+                
+                try {
+                    // Ваш JWT токен (замените на реальный)
+                    const jwtToken = 'ваш_jwt_токен_от_точки';
+                    
+                    // Отправка данных на API
+                    const response = await fetch('https://api.tochka.com/payment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${jwtToken}`
+                        },
+                        body: JSON.stringify({
+                            amount: amount,
+                            [isEmail ? 'email' : 'phone']: contactValue,
+                            purpose: 'Оплата аренды автомобиля', // Фиксированное назначение
+                            redirectUrl: 'https://alfonsmaybach.github.io/Arenda_payment/success.html'
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        // Успешный платеж
+                        successMessage.textContent = 'Платеж успешно обработан! Чек будет отправлен на указанные контакты.';
+                        successMessage.style.display = 'block';
+                        
+                        // Перенаправление на страницу успеха
+                        setTimeout(() => {
+                            window.location.href = 'success.html';
+                        }, 2000);
+                    } else {
+                        // Ошибка платежа
+                        throw new Error(result.message || 'Ошибка при обработке платежа');
+                    }
+                } catch (error) {
+                    console.error('Ошибка:', error);
+                    showError(error.message);
+                } finally {
+                    loading.style.display = 'none';
+                    payButton.disabled = false;
+                }
             });
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                loading.style.display = 'none';
+                payButton.disabled = false;
+            }
         });
     </script>
 </body>
