@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обработка платежа</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .success {
+            color: #4CAF50;
+            font-size: 24px;
+        }
+        .error {
+            color: #f44336;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="status-message">Обработка платежа...</div>
+        <div id="transaction-details" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const paymentId = urlParams.get('payment_id');
+            const status = urlParams.get('status');
+            const amount = urlParams.get('amount');
+            const contact = urlParams.get('contact');
+
+            const statusElement = document.getElementById('status-message');
+            const detailsElement = document.getElementById('transaction-details');
+
+            if (status === 'success' && paymentId) {
+                statusElement.innerHTML = '<div class="success">Платеж успешно завершен!</div>';
+                detailsElement.innerHTML = `
+                    <p>Номер транзакции: <strong>${paymentId}</strong></p>
+                    <p>Сумма: <strong>${amount ? (amount / 100) + ' ₽' : '—'}</strong></p>
+                    ${contact ? `<p>Чек отправлен на: <strong>${contact}</strong></p>` : ''}
+                    <button onclick="window.location.href='https://alfonsmaybach.github.io/Arenda_payment/'" 
+                            style="margin-top: 20px; padding: 10px 20px; background: #2c3e50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        Вернуться на сайт
+                    </button>
+                `;
+            } else {
+                statusElement.innerHTML = '<div class="error">Ошибка обработки платежа</div>';
+                detailsElement.innerHTML = `
+                    <p>Попробуйте оплатить снова или свяжитесь с поддержкой.</p>
+                    <button onclick="window.location.href='https://alfonsmaybach.github.io/Arenda_payment/'" 
+                            style="margin-top: 20px; padding: 10px 20px; background: #2c3e50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        Вернуться на сайт
+                    </button>
+                `;
+            }
+
+            // Отправка данных на сервер (если нужно)
+            if (paymentId && status) {
+                fetch('https://ваш-сервер.com/api/payment-callback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ paymentId, status, amount, contact })
+                }).catch(e => console.error('Ошибка отправки данных:', e));
+            }
+        });
+    </script>
+</body>
+</html>
