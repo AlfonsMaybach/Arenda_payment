@@ -282,15 +282,15 @@
                     }
                 } else {
                     // Проверка телефона
-                    if (contact.length !== 12 || !contact.startsWith('+7')) {
-                        showError('Введите номер в формате +79261234567 (12 символов)');
+                    if (contact.length !== 11 || !contact.startsWith('7')) {
+                        showError('Введите номер в формате 79261234567 (11 символов)');
                         return;
                     }
                     
                     // Проверяем что после +7 идут только цифры
                     const phoneDigits = contact.substring(2);
                     if (!/^\d{10}$/.test(phoneDigits)) {
-                        showError('Номер должен содержать 10 цифр после +7');
+                        showError('Номер должен содержать 10 цифр после 7');
                         return;
                     }
                 }
